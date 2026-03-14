@@ -25,23 +25,20 @@
   color: #000000;
   font-weight: 700;
   position: relative;
-  /* Plasma blue gradient + glow */
-  background: radial-gradient(circle at 30% 30%, #8EDBFF, #3ABEFF);
+  /* Background color is applied inline per bubble based on score/water/alert */
   box-shadow:
-    0 6px 20px rgba(58, 190, 255, 0.45),
-    inset 0 0 12px rgba(255, 255, 255, 0.25);
-  /* Subtle shadow to keep black text readable on blue */
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.35);
+    0 6px 20px rgba(0, 0, 0, 0.25),
+    inset 0 0 10px rgba(255, 255, 255, 0.2);
   /* Floating animation */
   animation: gp-float 6s ease-in-out infinite;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.5s ease;
 }
 
 .gp-bubble:hover {
   transform: scale(1.08);
   box-shadow:
-    0 10px 28px rgba(58, 190, 255, 0.55),
-    inset 0 0 16px rgba(255, 255, 255, 0.3);
+    0 10px 28px rgba(0, 0, 0, 0.35),
+    inset 0 0 14px rgba(255, 255, 255, 0.25);
   animation-play-state: paused;
   z-index: 2;
 }
@@ -68,9 +65,8 @@
 .gp-deco {
   pointer-events: none;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.35) 0%, transparent 55%),
-              rgba(58, 190, 255, 0.35);
-  box-shadow: 0 3px 10px rgba(58, 190, 255, 0.3);
+  background: rgba(32, 93, 130, 0.3);
+  box-shadow: 0 3px 10px rgba(32, 93, 130, 0.2);
   animation: gp-float 4s ease-in-out infinite;
 }
 
