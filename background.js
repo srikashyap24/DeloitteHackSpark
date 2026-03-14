@@ -38,9 +38,11 @@ function handleNewPrompt(payload) {
       stats.repeatedPrompts += 1;
     }
     
-    // Track usage dynamically by AI platform name
+    // Track usage dynamically by AI platform and model name when available.
     if (payload.aiType) {
-      stats.aiUsage[payload.aiType] = (stats.aiUsage[payload.aiType] || 0) + 1;
+      const aiModel = sanitizeModelName(payload.aiModel);
+      const usageKey = aiModel ? `${payload.aiType} (${aiModel})` : payload.aiType;
+      stats.aiUsage[usageKey] = (stats.aiUsage[usageKey] || 0) + 1;
     }
 
     // Calculate environmental impact
@@ -61,6 +63,11 @@ function handleNewPrompt(payload) {
     // Optional Enhancement: Sending to Streamlit dashboard API
     // sendToDashboard(payload, stats);
   });
+}
+
+function sanitizeModelName(aiModel) {
+  if (typeof aiModel !== "string") return "";
+  return aiModel.replace(/[^a-zA-Z0-9.\- ]/g, " ").replace(/\s+/g, " ").trim().slice(0, 60);
 }
 
 function sendToDashboard(payload, stats) {
