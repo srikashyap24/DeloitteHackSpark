@@ -62,23 +62,13 @@ function loadStats() {
         const scoreCircle = document.getElementById("score-circle");
         const scoreValue = document.getElementById("score-value");
         scoreValue.innerText = displayScore;
-        
-        // Apply unified palette color based on score
-        const color = getScoreColor(displayScore);
-        scoreCircle.style.borderColor = color;
-        scoreCircle.style.boxShadow = `0 0 18px ${color}66`;
-        scoreCircle.style.transition = "border-color 0.4s ease, box-shadow 0.4s ease";
 
-        // Apply palette color to popup header + section titles
-        const header = document.querySelector(".header, header, .popup-header, h1");
-        if (header) {
-            header.style.color = color;
-            header.style.transition = "color 0.4s ease";
-        }
-        document.querySelectorAll(".section-title").forEach(el => {
-            el.style.color = color;
-            el.style.transition = "color 0.4s ease";
-        });
+        // Set --gp-primary globally so ALL CSS elements react to the score change
+        const color = getScoreColor(displayScore);
+        document.documentElement.style.setProperty("--gp-primary", color);
+
+        // Score circle glow (uses inline style for dynamic glow intensity)
+        scoreCircle.style.boxShadow = `0 0 18px ${color}66`;
 
         // Pass dedicated alerts array collected from calculateScore()
         const storedAlerts = Array.isArray(result.alerts) ? result.alerts : [];
