@@ -48,7 +48,7 @@ export default function GreenPromptBubble() {
   const color = getScoreColor(score);
 
   return (
-    <div className="gp-stack">
+    <div className="gp-stack" style={{ "--gp-bubble-color": color }}>
       {/* Decorative rising mini-bubbles */}
       <div className="gp-deco" style={{ background: color, opacity: 0.4 }} />
       <div className="gp-deco" style={{ background: color, opacity: 0.3 }} />

@@ -12,7 +12,7 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* ── Shared Plasma Blue Style ───────────────────── */
+/* ── Shared Bubble Style ────────────────────────── */
 .gp-bubble {
   pointer-events: all;
   border-radius: 50%;
@@ -27,8 +27,8 @@
   position: relative;
   /* Background color applied inline per bubble */
   box-shadow:
-    0 0 10px rgba(37, 99, 235, 0.45),
-    0 0 22px rgba(37, 99, 235, 0.25),
+    0 0 10px color-mix(in srgb, var(--gp-bubble-color, #2563EB) 45%, transparent),
+    0 0 22px color-mix(in srgb, var(--gp-bubble-color, #2563EB) 25%, transparent),
     inset 0 0 10px rgba(255, 255, 255, 0.15);
   /* Floating animation */
   animation: gp-float 6s ease-in-out infinite;
@@ -38,8 +38,8 @@
 .gp-bubble:hover {
   transform: scale(1.08);
   box-shadow:
-    0 0 14px rgba(37, 99, 235, 0.55),
-    0 0 28px rgba(37, 99, 235, 0.4),
+    0 0 14px color-mix(in srgb, var(--gp-bubble-color, #2563EB) 55%, transparent),
+    0 0 28px color-mix(in srgb, var(--gp-bubble-color, #2563EB) 40%, transparent),
     inset 0 0 12px rgba(255, 255, 255, 0.2);
   animation-play-state: paused;
   z-index: 2;
@@ -67,8 +67,8 @@
 .gp-deco {
   pointer-events: none;
   border-radius: 50%;
-  background: rgba(37, 99, 235, 0.3);
-  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.2);
+  background: color-mix(in srgb, var(--gp-bubble-color, #2563EB) 30%, transparent);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--gp-bubble-color, #2563EB) 20%, transparent);
   animation: gp-float 4s ease-in-out infinite;
 }
 

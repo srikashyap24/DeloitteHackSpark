@@ -76,10 +76,10 @@ h1 {
     align-items: center;
     justify-content: center;
     margin-bottom: 16px;
-    background-color: rgba(37, 99, 235, 0.08);
+    background-color: color-mix(in srgb, var(--gp-primary) 8%, transparent);
     box-shadow:
-        0 0 12px rgba(37, 99, 235, 0.3),
-        0 0 24px rgba(37, 99, 235, 0.15);
+        0 0 12px color-mix(in srgb, var(--gp-primary) 30%, transparent),
+        0 0 24px color-mix(in srgb, var(--gp-primary) 15%, transparent);
     transition: all 0.4s ease;
 }
 
@@ -103,9 +103,9 @@ h1 {
 }
 
 .badge {
-    background: rgba(37, 99, 235, 0.12);
+    background: color-mix(in srgb, var(--gp-primary) 12%, transparent);
     color: var(--gp-primary);
-    border: 1px solid rgba(37, 99, 235, 0.35);
+    border: 1px solid color-mix(in srgb, var(--gp-primary) 35%, transparent);
     padding: 4px 10px;
     border-radius: 12px;
     font-size: 10px;
@@ -164,9 +164,9 @@ h1 {
     transform: translateY(-2px);
     background: var(--hover-bg);
     box-shadow:
-        0 0 10px rgba(37, 99, 235, 0.35),
-        0 0 22px rgba(37, 99, 235, 0.2);
-    border-color: rgba(37, 99, 235, 0.4);
+        0 0 10px color-mix(in srgb, var(--gp-primary) 35%, transparent),
+        0 0 22px color-mix(in srgb, var(--gp-primary) 20%, transparent);
+    border-color: color-mix(in srgb, var(--gp-primary) 40%, transparent);
 }
 
 .metric-header {
@@ -234,9 +234,9 @@ h1 {
 }
 
 .total-card {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: rgba(37, 99, 235, 0.35);
-    box-shadow: 0 0 8px rgba(37, 99, 235, 0.2);
+    background: color-mix(in srgb, var(--gp-primary) 8%, transparent);
+    border-color: color-mix(in srgb, var(--gp-primary) 35%, transparent);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--gp-primary) 20%, transparent);
 }
 
 .ai-usage-section {
@@ -321,7 +321,7 @@ h1 {
 }
 
 .intel-advice {
-    background: rgba(37, 99, 235, 0.08);
+    background: color-mix(in srgb, var(--gp-primary) 8%, transparent);
     border-left: 3px solid var(--gp-primary);
     padding: 8px 10px;
     border-radius: 4px;
@@ -432,7 +432,7 @@ h1 {
     margin: 0 0 12px 0;
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid rgba(37, 99, 235, 0.6);
+    border: 1px solid color-mix(in srgb, var(--gp-primary) 60%, transparent);
     background: var(--gp-primary);
     color: #fff;
     text-align: center;
@@ -441,7 +441,7 @@ h1 {
     font-size: 12px;
     box-sizing: border-box;
     transition: filter 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 0 10px rgba(37, 99, 235, 0.35);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--gp-primary) 35%, transparent);
 }
 
 .learn-more-btn:hover {
