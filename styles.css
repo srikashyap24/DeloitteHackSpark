@@ -66,34 +66,37 @@ h1 {
     margin-bottom: 24px;
 }
 
-.score-circle {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    border: 4px solid var(--gp-primary);
+
+/* ── Polar Bear Visualization ───────────────────── */
+.bear-scene {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    margin-bottom: 16px;
+    align-items: center;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 8px;
     background-color: color-mix(in srgb, var(--gp-primary) 8%, transparent);
     box-shadow:
-        0 0 12px color-mix(in srgb, var(--gp-primary) 30%, transparent),
-        0 0 24px color-mix(in srgb, var(--gp-primary) 15%, transparent);
+        0 4px 18px color-mix(in srgb, var(--gp-primary) 30%, transparent),
+        0 0 0 2px color-mix(in srgb, var(--gp-primary) 15%, transparent);
     transition: all 0.4s ease;
 }
 
-#score-value {
-    font-size: 28px;
-    font-weight: 800;
+.bear-scene svg {
+    display: block;
+    width: 200px;
+    height: 180px;
 }
 
-.score-label {
-    font-size: 10px;
-    text-transform: uppercase;
+.bear-caption {
+    font-size: 11px;
     color: var(--text-muted);
-    font-weight: 600;
+    text-align: center;
+    margin: 0 0 10px 0;
+    font-style: italic;
+    letter-spacing: 0.2px;
 }
+
 
 .rewards {
     display: flex;

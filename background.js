@@ -47,16 +47,19 @@ function updateScore() {
         }
 
         const latest = prompts[0]; // Most recent prompt only
+        let penaltyTriggered = false;
 
         // Penalty 1: Very Short Prompt (< 10 chars)
         if (latest.length > 0 && latest.length < 10) {
             score -= 2;
+            penaltyTriggered = true;
             alerts.push("⚠ Prompt is very short. Add more context to improve AI efficiency.");
         }
 
         // Penalty 2: Very Long Prompt (> 300 chars)
         if (latest.length > 300) {
             score -= 3;
+            penaltyTriggered = true;
             alerts.push("⚠ Prompt is very long. Consider breaking it into smaller tasks.");
         }
 
@@ -65,6 +68,7 @@ function updateScore() {
         const isDuplicate = texts.slice(1).some(t => t === latest.text);
         if (isDuplicate) {
             score -= 5;
+            penaltyTriggered = true;
             alerts.push("⚠ Repeated prompt detected. Try refining the prompt instead of repeating it.");
         }
 
@@ -73,6 +77,7 @@ function updateScore() {
             const timeDiff = prompts[0].time - prompts[2].time;
             if (timeDiff < 30000) {
                 score -= 3;
+                penaltyTriggered = true;
                 alerts.push("⚠ Rapid prompting detected. Try refining your prompt instead of sending multiple prompts.");
             }
         }
@@ -81,6 +86,7 @@ function updateScore() {
         const recentOutput = stats.recentOutputTokens || 0;
         if (recentOutput > 1000) {
             score -= 4;
+            penaltyTriggered = true;
             alerts.push("⚠ AI generated a very large response. Consider requesting shorter answers.");
         }
 
@@ -88,7 +94,13 @@ function updateScore() {
         const recentInput = stats.recentInputTokens || 0;
         if ((recentInput + recentOutput) > 1500) {
             score -= 5;
+            penaltyTriggered = true;
             alerts.push("⚠ This prompt generated a high number of tokens.");
+        }
+
+        // Reward: efficient prompt — +1 if no penalties triggered
+        if (!penaltyTriggered) {
+            score += 1;
         }
 
         // Clamp score to 0–100 (can never go below 0 or above 100)

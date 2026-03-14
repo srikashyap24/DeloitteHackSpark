@@ -7,6 +7,47 @@ function getScoreColor(score) {
     return "#E74343";
 }
 
+// ── Polar Bear Climate Visualization ──────────────────────────────────────────
+// waterY: the SVG y-coordinate where water surface starts (lower = more above bear)
+// bearShift: how far down the bear group is translated (simulates sinking)
+const BEAR_STATES = {
+    //             waterY  bearShift  caption
+    bear_full: { waterY: 132, bearShift:  0,  label: "🐻‍❄️ Great job! The Arctic is thriving." },
+    bear_dip:  { waterY: 122, bearShift:  6,  label: "🌊 Slightly inefficient — the ice is melting." },
+    bear_half: { waterY: 108, bearShift: 16,  label: "⚠️ Half submerged — the bear is struggling." },
+    bear_low:  { waterY:  92, bearShift: 28,  label: "🔴 Mostly underwater — critical AI usage!" },
+    bear_sink: { waterY:  74, bearShift: 44,  label: "💀 Nearly gone — the Arctic is in danger!" },
+};
+
+function updatePolarBear(score) {
+    let state;
+    if (score >= 90)      state = BEAR_STATES.bear_full;
+    else if (score >= 75) state = BEAR_STATES.bear_dip;
+    else if (score >= 60) state = BEAR_STATES.bear_half;
+    else if (score >= 40) state = BEAR_STATES.bear_low;
+    else                  state = BEAR_STATES.bear_sink;
+
+    const waterRect = document.getElementById("water-rect");
+    const wavePath  = document.getElementById("wave-path");
+    const bearGroup = document.getElementById("bear-group");
+    const caption   = document.getElementById("bear-caption");
+
+    if (waterRect) waterRect.setAttribute("y", state.waterY);
+    if (bearGroup) bearGroup.style.transform = `translateY(${state.bearShift}px)`;
+    if (caption)   caption.textContent = state.label;
+
+    // Wave path syncs with water surface
+    if (wavePath) {
+        const y  = state.waterY;
+        const y1 = y - 5;
+        const y2 = y + 5;
+        wavePath.setAttribute("d",
+            `M0,${y} Q25,${y1} 50,${y} Q75,${y2} 100,${y} Q125,${y1} 150,${y} Q175,${y2} 200,${y} L200,180 L0,180 Z`
+        );
+    }
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
     loadStats();
 
@@ -59,16 +100,13 @@ function loadStats() {
         
         // Use dedicated score from calculateScore() — fallback to stats.efficiencyScore
         const displayScore = (typeof result.score === 'number') ? result.score : stats.efficiencyScore;
-        const scoreCircle = document.getElementById("score-circle");
-        const scoreValue = document.getElementById("score-value");
-        scoreValue.innerText = displayScore;
 
         // Set --gp-primary globally so ALL CSS elements react to the score change
         const color = getScoreColor(displayScore);
         document.documentElement.style.setProperty("--gp-primary", color);
 
-        // Score circle glow (uses inline style for dynamic glow intensity)
-        scoreCircle.style.boxShadow = `0 0 18px ${color}66`;
+        // Drive polar bear animation based on score
+        updatePolarBear(displayScore);
 
         // Pass dedicated alerts array collected from calculateScore()
         const storedAlerts = Array.isArray(result.alerts) ? result.alerts : [];

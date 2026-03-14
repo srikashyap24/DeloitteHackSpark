@@ -16,10 +16,71 @@
         </header>
 
         <section class="score-section">
-            <div class="score-circle" id="score-circle">
-                <span id="score-value">100</span>
-                <span class="score-label">Score</span>
+            <!-- Polar Bear Climate Visualization -->
+            <div class="bear-scene" id="bear-scene">
+                <svg id="bear-svg" viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" width="200" height="180">
+                    <!-- Ocean background -->
+                    <defs>
+                        <clipPath id="water-clip">
+                            <rect x="0" y="0" width="200" height="180"/>
+                        </clipPath>
+                        <linearGradient id="ocean-grad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#7EC8E3" stop-opacity="0.85"/>
+                            <stop offset="100%" stop-color="#2563EB" stop-opacity="0.95"/>
+                        </linearGradient>
+                        <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#dbeafe"/>
+                            <stop offset="100%" stop-color="#93c5fd"/>
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Sky -->
+                    <rect x="0" y="0" width="200" height="180" fill="url(#sky-grad)"/>
+
+                    <!-- Bear group — moves up/down via JS translateY -->
+                    <g id="bear-group" style="transition: transform 0.8s cubic-bezier(.4,0,.2,1);">
+
+                        <!-- Ice floe -->
+                        <ellipse cx="100" cy="138" rx="52" ry="14" fill="#e0f7ff" stroke="#b0d8f0" stroke-width="1.5"/>
+                        <ellipse cx="100" cy="135" rx="48" ry="11" fill="#f0fbff"/>
+
+                        <!-- Bear body -->
+                        <ellipse cx="100" cy="118" rx="26" ry="22" fill="#f8f8f8" stroke="#ddd" stroke-width="1"/>
+                        <!-- Bear head -->
+                        <circle cx="100" cy="90" r="18" fill="#f8f8f8" stroke="#ddd" stroke-width="1"/>
+                        <!-- Ears -->
+                        <circle cx="86" cy="76" r="6" fill="#f0f0f0" stroke="#ddd" stroke-width="1"/>
+                        <circle cx="114" cy="76" r="6" fill="#f0f0f0" stroke="#ddd" stroke-width="1"/>
+                        <circle cx="86" cy="76" r="3" fill="#e8d5d5"/>
+                        <circle cx="114" cy="76" r="3" fill="#e8d5d5"/>
+                        <!-- Face -->
+                        <ellipse cx="100" cy="97" rx="9" ry="7" fill="#e0dada"/>
+                        <circle cx="94" cy="88" r="2.5" fill="#222"/>
+                        <circle cx="106" cy="88" r="2.5" fill="#222"/>
+                        <circle cx="95" cy="87.5" r="0.9" fill="white"/>
+                        <circle cx="107" cy="87.5" r="0.9" fill="white"/>
+                        <!-- Nose -->
+                        <ellipse cx="100" cy="94" rx="4" ry="2.5" fill="#555"/>
+                        <!-- Arms -->
+                        <ellipse cx="76" cy="118" rx="9" ry="14" fill="#f0f0f0" stroke="#ddd" stroke-width="1" transform="rotate(-15 76 118)"/>
+                        <ellipse cx="124" cy="118" rx="9" ry="14" fill="#f0f0f0" stroke="#ddd" stroke-width="1" transform="rotate(15 124 118)"/>
+                        <!-- Legs -->
+                        <ellipse cx="88" cy="136" rx="8" ry="10" fill="#f0f0f0" stroke="#ddd" stroke-width="1"/>
+                        <ellipse cx="112" cy="136" rx="8" ry="10" fill="#f0f0f0" stroke="#ddd" stroke-width="1"/>
+                    </g>
+
+                    <!-- Water overlay (sits on top, clips the bear) -->
+                    <rect id="water-rect" x="0" y="124" width="200" height="56"
+                          fill="url(#ocean-grad)" opacity="0.78"
+                          style="transition: y 0.8s cubic-bezier(.4,0,.2,1);"/>
+
+                    <!-- Gentle wave on water surface -->
+                    <path id="wave-path" d="M0,124 Q25,119 50,124 Q75,129 100,124 Q125,119 150,124 Q175,129 200,124 L200,180 L0,180 Z"
+                          fill="url(#ocean-grad)" opacity="0.9"
+                          style="transition: d 0.8s cubic-bezier(.4,0,.2,1);"/>
+                </svg>
             </div>
+            <p class="bear-caption" id="bear-caption">Your AI efficiency affects the climate.</p>
             <div class="rewards" id="rewards-container">
                 <!-- Badges will be injected here -->
             </div>
