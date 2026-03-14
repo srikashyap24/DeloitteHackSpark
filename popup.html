@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenPrompt</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🌱</div>
+            <h1>GreenPrompt</h1>
+            <p class="subtitle">AI Sustainability Monitor</p>
+        </header>
+
+        <section class="score-section">
+            <div class="score-circle" id="score-circle">
+                <span id="score-value">100</span>
+                <span class="score-label">Score</span>
+            </div>
+            <div class="rewards" id="rewards-container">
+                <!-- Badges will be injected here -->
+            </div>
+        </section>
+
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon">🔢</div>
+                <div class="metric-info">
+                    <span class="metric-title">Tokens</span>
+                    <span class="metric-value" id="tokens-val">0</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-info">
+                    <span class="metric-title">Energy (kWh)</span>
+                    <span class="metric-value" id="energy-val">0.0000</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">💧</div>
+                <div class="metric-info">
+                    <span class="metric-title">Water (L)</span>
+                    <span class="metric-value" id="water-val">0.0000</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🌍</div>
+                <div class="metric-info">
+                    <span class="metric-title">CO₂ (kg)</span>
+                    <span class="metric-value" id="co2-val">0.0000</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="ai-usage-section">
+            <h3>AI Platform Usage</h3>
+            <div class="ai-usage-bars" id="ai-usage-container">
+                <!-- Dynamically injected via JS -->
+            </div>
+        </section>
+
+        <section class="alerts-section" id="alerts-section">
+            <h3>Alerts & Tips</h3>
+            <ul id="alerts-list">
+                <!-- Alerts injected via JS -->
+            </ul>
+        </section>
+
+        <button id="reset-btn" class="reset-btn">Reset Stats</button>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
