@@ -7,6 +7,12 @@ function estimateTokens(text) {
 let lastPrompt = "";
 let lastPromptTime = 0;
 
+// Output Token Tracking
+let isGeneratingOutput = false;
+let baselineTextLength = 0;
+let outputTimer = null;
+let currentPlatform = "";
+
 function handlePromptSubmit(promptText) {
   promptText = promptText.trim();
   if (!promptText) return;
@@ -46,6 +52,7 @@ function handlePromptSubmit(promptText) {
   chrome.runtime.sendMessage({
     type: "PROMPT_SUBMITTED",
     payload: {
+      text: promptText,
       textLength: promptText.length,
       tokens: tokenCount,
       isRepeated: isRepeated,
@@ -53,7 +60,45 @@ function handlePromptSubmit(promptText) {
       timestamp: now
     }
   });
+
+  // Prepare for AI output token tracking
+  baselineTextLength = document.body.innerText.length;
+  currentPlatform = aiType;
+  isGeneratingOutput = true;
 }
+
+// Global MutationObserver to watch for AI responses streaming into the page
+const outputObserver = new MutationObserver(() => {
+    if (!isGeneratingOutput) return;
+
+    // Reset the debounce timer whenever the DOM changes (i.e., streaming continues)
+    clearTimeout(outputTimer);
+
+    // If DOM stops changing for exactly 2 full seconds, we consider generation "done"
+    outputTimer = setTimeout(() => {
+        isGeneratingOutput = false; // Turn off tracker
+        
+        const finalLength = document.body.innerText.length;
+        const diff = finalLength - baselineTextLength;
+
+        if (diff > 0) {
+            const outputTokens = estimateTokens("a".repeat(diff)); // Calculate tokens roughly
+            
+            // Send captured output to the background immediately
+            chrome.runtime.sendMessage({
+                type: "OUTPUT_GENERATED",
+                payload: {
+                    outputTokens: outputTokens,
+                    aiType: currentPlatform,
+                    timestamp: Date.now()
+                }
+            });
+        }
+    }, 2000);
+});
+
+// Start observing all content additions across the entire body natively
+outputObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
 
 // Listen for combinations of sending messages on AI platforms
 document.addEventListener('keydown', (e) => {

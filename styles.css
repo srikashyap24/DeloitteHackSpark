@@ -119,6 +119,10 @@ h1 {
     margin-bottom: 24px;
 }
 
+.metrics-grid .metric-card:last-child {
+    grid-column: span 2;
+}
+
 .metric-card {
     background: var(--card-bg);
     border-radius: 10px;
@@ -158,6 +162,47 @@ h1 {
 .metric-value {
     font-size: 14px;
     font-weight: 700;
+}
+
+/* Token Breakdown Styling */
+.token-card {
+    align-items: flex-start;
+}
+
+.token-info {
+    width: 100%;
+}
+
+.token-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+    font-size: 11px;
+}
+
+.token-row {
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-muted);
+}
+
+.token-val {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.token-total {
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    color: var(--accent-green);
+    font-weight: 700;
+}
+
+.token-total .token-val {
+    color: var(--accent-green);
+    font-size: 12px;
 }
 
 .ai-usage-section {
@@ -202,6 +247,55 @@ h1 {
     font-size: 12px;
     color: var(--accent-green);
     font-weight: 700;
+}
+
+/* Prompt Intelligence specific */
+.intel-summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.intel-stat {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.intel-stat strong {
+    color: var(--accent-green);
+    font-size: 14px;
+}
+
+.intel-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 4px;
+    display: block;
+}
+
+.intel-platforms ul, .advice-list {
+    margin: 0;
+    padding-left: 0;
+    list-style-type: none;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.intel-advice {
+    background: rgba(74, 222, 128, 0.05);
+    border-left: 3px solid var(--accent-green);
+    padding: 8px 10px;
+    border-radius: 4px;
+}
+
+.advice-list li {
+    margin-bottom: 4px;
+    line-height: 1.4;
 }
 
 .alerts-section {
@@ -273,4 +367,27 @@ h1 {
     background: var(--card-bg);
     color: white;
     border-color: #666;
+}
+
+/* Disclaimer Styling */
+.disclaimer {
+    margin: 16px 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.4;
+    text-align: left;
+}
+
+.disclaimer h4 {
+    margin: 0 0 4px 0;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.disclaimer p {
+    margin: 0;
 }
