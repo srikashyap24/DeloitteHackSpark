@@ -11,8 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
     loadStats();
 
     document.getElementById("reset-btn").addEventListener("click", () => {
-        chrome.storage.local.remove("stats", () => {
-            loadStats();
+        // Remove stats AND score/alerts — this is the ONLY place score resets to 100
+        chrome.storage.local.remove(["stats", "score", "alerts"], () => {
+            chrome.storage.local.set({ score: 100, alerts: [] }, () => {
+                loadStats();
+            });
         });
     });
 });

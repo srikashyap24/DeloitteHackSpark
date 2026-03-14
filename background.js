@@ -30,14 +30,15 @@ const defaultStats = {
 };
 
 // ─── updateScore ───────────────────────────────────────────────────────────────────
-// Reads last_prompts from COMMITTED storage and recomputes score + alerts.
-// Must be called AFTER chrome.storage.local.set() to ensure data is current.
+// Reads the CURRENT stored score and applies only the latest prompt's penalties.
+// Score NEVER resets to 100 here — it only resets when the user presses Reset Stats.
 function updateScore() {
-    chrome.storage.local.get(["stats"], (result) => {
+    chrome.storage.local.get(["stats", "score"], (result) => {
         const stats = result.stats || {};
         const prompts = stats.last_prompts || [];
 
-        let score = 100;
+        // Start from existing stored score (default 100 only on very first run)
+        let score = (typeof result.score === 'number') ? result.score : 100;
         const alerts = [];
 
         if (prompts.length === 0) {
@@ -45,7 +46,7 @@ function updateScore() {
             return;
         }
 
-        const latest = prompts[0]; // Most recent prompt
+        const latest = prompts[0]; // Most recent prompt only
 
         // Penalty 1: Very Short Prompt (< 10 chars)
         if (latest.length > 0 && latest.length < 10) {
@@ -90,10 +91,10 @@ function updateScore() {
             alerts.push("⚠ This prompt generated a high number of tokens.");
         }
 
-        // Clamp score to 0–100
+        // Clamp score to 0–100 (can never go below 0 or above 100)
         score = Math.max(0, Math.min(100, score));
 
-        // Save score and alerts as dedicated storage keys
+        // Save the updated score and current alerts
         chrome.storage.local.set({ score, alerts });
     });
 }
