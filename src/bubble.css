@@ -22,7 +22,7 @@
   justify-content: center;
   cursor: default;
   user-select: none;
-  color: #fff;
+  color: #000000;
   font-weight: 700;
   position: relative;
   /* Plasma blue gradient + glow */
@@ -30,6 +30,8 @@
   box-shadow:
     0 6px 20px rgba(58, 190, 255, 0.45),
     inset 0 0 12px rgba(255, 255, 255, 0.25);
+  /* Subtle shadow to keep black text readable on blue */
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.35);
   /* Floating animation */
   animation: gp-float 6s ease-in-out infinite;
   transition: transform 0.22s ease, box-shadow 0.22s ease;
