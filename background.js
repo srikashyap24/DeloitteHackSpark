@@ -111,13 +111,59 @@ function handleNewPrompt(payload) {
     stats.co2Emitted += (payload.tokens * modelRates.co2);
     stats.costEstimated += (payload.tokens * modelRates.cost);
 
-    // Calculate dynamic efficiency score (0-100)
-    // Reduce score based on long prompts (> 500 tokens) and repeated prompts
-    let penalty = 0;
-    if (payload.isRepeated) penalty += 5;
-    if (payload.tokens > 500) penalty += 2;
-    
-    stats.efficiencyScore = Math.max(0, stats.efficiencyScore - penalty);
+    // Track for comparison in handleOutputGenerated
+    stats.recentInputTokens = payload.tokens;
+
+    // --- NEW BEHAVIORAL SCORING SYSTEM ---
+    let scoreChange = 0;
+
+    // Existing Rule: Repeated prompt penalty
+    if (payload.isRepeated) scoreChange -= 5;
+
+    // Rule 1: Short Prompt Reward (< 80 chars) vs Penalty (< 10 chars)
+    if (payload.textLength < 10) {
+        scoreChange -= 2; // Penalty: Very Short
+    } else if (payload.textLength < 80) {
+        scoreChange += 2; // Reward: Short
+    }
+
+    // Rule 2: Unique Prompts Reward (Last 5 are all different)
+    if (stats.last_prompts.length >= 5) {
+        const uniqueTexts = new Set(stats.last_prompts.map(p => p.text));
+        if (uniqueTexts.size === 5) scoreChange += 3;
+    }
+
+    // Rule 4: Consistent Platform Usage (4+ in a row)
+    if (stats.last_prompts.length >= 4) {
+        const lastSite = stats.last_prompts[0].site;
+        const consistent = stats.last_prompts.slice(0, 4).every(p => p.site === lastSite);
+        if (consistent) scoreChange += 2;
+    }
+
+    // Rule 5: Improved Prompt Length (shorter than previous)
+    if (stats.last_prompts.length >= 2) {
+        if (stats.last_prompts[0].length < stats.last_prompts[1].length) {
+            scoreChange += 2;
+        }
+    }
+
+    // Penalty 1: Very Long Prompt (> 300 characters)
+    if (payload.textLength > 300) scoreChange -= 3;
+
+    // Penalty 3: Rapid Prompt Spamming (3 prompts within 30 seconds)
+    if (stats.last_prompts.length >= 3) {
+        const timeDiff = stats.last_prompts[0].time - stats.last_prompts[2].time;
+        if (timeDiff < 30000) scoreChange -= 3;
+    }
+
+    // Penalty 5: Excessive Prompting (> 8 prompts)
+    if (stats.promptsSent > 8) scoreChange -= 4;
+
+    // Legacy logic cleanup/re-application
+    if (payload.tokens > 500) scoreChange -= 2; // Keep mild penalty for high token inputs
+
+    // Apply score update
+    stats.efficiencyScore = Math.min(100, Math.max(0, stats.efficiencyScore + scoreChange));
 
     chrome.storage.local.set({ stats });
   });
@@ -154,6 +200,26 @@ function handleOutputGenerated(payload) {
     stats.waterConsumed += (payload.outputTokens * modelRates.water);
     stats.co2Emitted += (payload.outputTokens * modelRates.co2);
     stats.costEstimated += (payload.outputTokens * modelRates.cost);
+
+    // --- OUTPUT BASED SCORING ---
+    let scoreChange = 0;
+    const inputTokens = stats.recentInputTokens || 1; // Fallback to avoid div by zero
+    const totalPromptTokens = inputTokens + payload.outputTokens;
+
+    // Reward 3: Efficient Token Usage (Total < 200)
+    if (totalPromptTokens < 200) scoreChange += 4;
+
+    // Reward 6: Balanced Output Size (Output < 4x Input)
+    if (payload.outputTokens < 4 * inputTokens) scoreChange += 3;
+
+    // Penalty 2: Very Large AI Output (> 1000 tokens)
+    if (payload.outputTokens > 1000) scoreChange -= 4;
+
+    // Penalty 6: High Token Cost Prompt (total_tokens > 1500)
+    if (totalPromptTokens > 1500) scoreChange -= 5;
+
+    // Apply score update
+    stats.efficiencyScore = Math.min(100, Math.max(0, stats.efficiencyScore + scoreChange));
 
     chrome.storage.local.set({ stats });
   });

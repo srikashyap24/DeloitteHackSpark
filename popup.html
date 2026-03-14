@@ -25,53 +25,51 @@
             </div>
         </section>
 
-        <section class="metrics-grid">
-            <div class="metric-card token-card">
-                <div class="metric-icon">🔢</div>
-                <div class="metric-info token-info">
-                    <span class="metric-title">Tokens</span>
-                    <div class="token-breakdown">
-                        <div class="token-row">
-                            <span class="token-label">Input:</span>
-                            <span class="token-val" id="tokens-input">0</span>
-                        </div>
-                        <div class="token-row">
-                            <span class="token-label">Output:</span>
-                            <span class="token-val" id="tokens-output">0</span>
-                        </div>
-                        <div class="token-row token-total">
-                            <span class="token-label">Total:</span>
-                            <span class="token-val" id="tokens-total">0</span>
-                        </div>
+        <h3 class="section-title" style="font-size: 13px; opacity: 0.9; margin-top: 10px; margin-bottom: 6px;">My Impact</h3>
+        <section class="metrics-row">
+            <div class="metric-card">
+                <div class="metric-row-inner">
+                    <div class="metric-header-inline">
+                        <span class="metric-icon">💧</span>
+                        <span class="metric-label">Water</span>
                     </div>
-                </div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon">⚡</div>
-                <div class="metric-info">
-                    <span class="metric-title">Energy (kWh)</span>
-                    <span class="metric-value" id="energy-val">0.0000</span>
-                </div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon">💧</div>
-                <div class="metric-info">
-                    <span class="metric-title">Water (L)</span>
                     <span class="metric-value" id="water-val">0.0000</span>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon">🌍</div>
-                <div class="metric-info">
-                    <span class="metric-title">CO₂ (kg)</span>
-                    <span class="metric-value" id="co2-val">0.0000</span>
+                <div class="metric-row-inner">
+                    <div class="metric-header-inline">
+                        <span class="metric-icon">⚡</span>
+                        <span class="metric-label">Energy</span>
+                    </div>
+                    <span class="metric-value" id="energy-val">0.0000</span>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon">💵</div>
-                <div class="metric-info">
-                    <span class="metric-title">Cost ($)</span>
-                    <span class="metric-value" id="cost-val">0.0000</span>
+                <div class="metric-row-inner">
+                    <div class="metric-header-inline">
+                        <span class="metric-icon">🌍</span>
+                        <span class="metric-label">CO₂</span>
+                    </div>
+                    <span class="metric-value" id="co2-val">0.0000</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="tokens-section">
+            <h3 class="section-title">Tokens</h3>
+            <div class="tokens-row">
+                <div class="metric-card token-card">
+                    <span class="metric-label">Input</span>
+                    <span class="metric-value" id="tokens-input">0</span>
+                </div>
+                <div class="metric-card token-card">
+                    <span class="metric-label">Output</span>
+                    <span class="metric-value" id="tokens-output">0</span>
+                </div>
+                <div class="metric-card token-card total-card">
+                    <span class="metric-label" style="color: var(--accent-green);">Total</span>
+                    <span class="metric-value" id="tokens-total" style="color: var(--accent-green);">0</span>
                 </div>
             </div>
         </section>

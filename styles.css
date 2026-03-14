@@ -112,25 +112,44 @@ h1 {
     border: 1px dashed var(--text-muted);
 }
 
-.metrics-grid {
+.metrics-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.tokens-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
     margin-bottom: 24px;
 }
 
-.metrics-grid .metric-card:last-child {
-    grid-column: span 2;
+.tokens-section {
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-size: 11px;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 .metric-card {
-    background: var(--card-bg);
-    border-radius: 10px;
-    padding: 12px;
-    display: flex;
-    align-items: center;
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
     border: 1px solid var(--border-color);
     transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .metric-card:hover {
@@ -138,71 +157,73 @@ h1 {
     background: var(--hover-bg);
 }
 
-.metric-icon {
-    font-size: 20px;
-    margin-right: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 6px;
-    border-radius: 8px;
+.metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
 }
 
-.metric-info {
+.metric-header-inline {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+}
+
+.metric-icon {
+    font-size: 16px;
+    margin-right: 8px;
 }
 
 .metric-title {
-    font-size: 10px;
-    color: var(--text-muted);
-    margin-bottom: 4px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-color);
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+}
+
+.metric-label {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.8;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+.metric-row-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 .metric-value {
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+@media (max-width: 320px) {
+    .metric-value {
+        font-size: 11px;
+    }
+}
+
+.metric-sub {
+    font-size: 12px;
 }
 
 /* Token Breakdown Styling */
 .token-card {
-    align-items: flex-start;
+    padding: 8px 10px;
 }
 
-.token-info {
-    width: 100%;
-}
-
-.token-breakdown {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    margin-top: 4px;
-    font-size: 11px;
-}
-
-.token-row {
-    display: flex;
-    justify-content: space-between;
-    color: var(--text-muted);
-}
-
-.token-val {
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.token-total {
-    margin-top: 4px;
-    padding-top: 4px;
-    border-top: 1px dashed rgba(255, 255, 255, 0.1);
-    color: var(--accent-green);
-    font-weight: 700;
-}
-
-.token-total .token-val {
-    color: var(--accent-green);
-    font-size: 12px;
+.total-card {
+    background: rgba(74, 222, 128, 0.05);
+    border-color: rgba(74, 222, 128, 0.3);
 }
 
 .ai-usage-section {

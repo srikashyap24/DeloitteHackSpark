@@ -40,10 +40,10 @@ function loadStats() {
         document.getElementById("tokens-input").innerText = Math.round(inputTokens).toLocaleString();
         document.getElementById("tokens-output").innerText = Math.round(outputTokens).toLocaleString();
         document.getElementById("tokens-total").innerText = Math.round(totalTokens).toLocaleString();
-        document.getElementById("energy-val").innerText = stats.energyConsumed.toFixed(5);
-        document.getElementById("water-val").innerText = stats.waterConsumed.toFixed(5);
-        document.getElementById("co2-val").innerText = stats.co2Emitted.toFixed(5);
-        document.getElementById("cost-val").innerText = "$" + stats.costEstimated.toFixed(5);
+        document.getElementById("energy-val").innerText = stats.energyConsumed.toFixed(5) + " kWh";
+        document.getElementById("water-val").innerText = stats.waterConsumed.toFixed(5) + " L";
+        document.getElementById("co2-val").innerText = stats.co2Emitted.toFixed(5) + " kg";
+        // document.getElementById("cost-val").innerText = "$" + stats.costEstimated.toFixed(5);
         
         const scoreCircle = document.getElementById("score-circle");
         const scoreValue = document.getElementById("score-value");
