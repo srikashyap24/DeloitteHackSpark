@@ -1,0 +1,74 @@
+.greenprompt-bubble {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  z-index: 2147483647;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+}
+
+.greenprompt-bubble:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+}
+
+.greenprompt-score {
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.greenprompt-label {
+  font-size: 8px;
+  opacity: 0.85;
+  margin-top: 1px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Tooltip */
+.greenprompt-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  background: rgba(15, 15, 15, 0.92);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(8px);
+  min-width: 130px;
+  text-align: center;
+}
+
+.greenprompt-bubble:hover .greenprompt-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.greenprompt-tooltip strong {
+  display: block;
+  font-size: 11px;
+  opacity: 0.6;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
