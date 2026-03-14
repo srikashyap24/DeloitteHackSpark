@@ -25,20 +25,22 @@
   color: #000000;
   font-weight: 700;
   position: relative;
-  /* Background color is applied inline per bubble based on score/water/alert */
+  /* Background color applied inline per bubble */
   box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.25),
-    inset 0 0 10px rgba(255, 255, 255, 0.2);
+    0 0 10px rgba(32, 93, 130, 0.45),
+    0 0 22px rgba(32, 93, 130, 0.25),
+    inset 0 0 10px rgba(255, 255, 255, 0.15);
   /* Floating animation */
   animation: gp-float 6s ease-in-out infinite;
-  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.5s ease;
+  transition: transform 0.22s ease, box-shadow 0.4s ease, background 0.5s ease;
 }
 
 .gp-bubble:hover {
   transform: scale(1.08);
   box-shadow:
-    0 10px 28px rgba(0, 0, 0, 0.35),
-    inset 0 0 14px rgba(255, 255, 255, 0.25);
+    0 0 14px rgba(32, 93, 130, 0.55),
+    0 0 28px rgba(32, 93, 130, 0.4),
+    inset 0 0 12px rgba(255, 255, 255, 0.2);
   animation-play-state: paused;
   z-index: 2;
 }
