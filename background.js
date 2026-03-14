@@ -29,6 +29,75 @@ const defaultStats = {
   last_prompts: []
 };
 
+// ─── updateScore ───────────────────────────────────────────────────────────────────
+// Reads last_prompts from COMMITTED storage and recomputes score + alerts.
+// Must be called AFTER chrome.storage.local.set() to ensure data is current.
+function updateScore() {
+    chrome.storage.local.get(["stats"], (result) => {
+        const stats = result.stats || {};
+        const prompts = stats.last_prompts || [];
+
+        let score = 100;
+        const alerts = [];
+
+        if (prompts.length === 0) {
+            chrome.storage.local.set({ score, alerts });
+            return;
+        }
+
+        const latest = prompts[0]; // Most recent prompt
+
+        // Penalty 1: Very Short Prompt (< 10 chars)
+        if (latest.length > 0 && latest.length < 10) {
+            score -= 2;
+            alerts.push("⚠ Prompt is very short. Add more context to improve AI efficiency.");
+        }
+
+        // Penalty 2: Very Long Prompt (> 300 chars)
+        if (latest.length > 300) {
+            score -= 3;
+            alerts.push("⚠ Prompt is very long. Consider breaking it into smaller tasks.");
+        }
+
+        // Penalty 3: Repeated Prompt (same text appears in last 5)
+        const texts = prompts.map(p => p.text);
+        const isDuplicate = texts.slice(1).some(t => t === latest.text);
+        if (isDuplicate) {
+            score -= 5;
+            alerts.push("⚠ Repeated prompt detected. Try refining the prompt instead of repeating it.");
+        }
+
+        // Penalty 4: Prompt Spamming (3+ prompts within 30 seconds)
+        if (prompts.length >= 3) {
+            const timeDiff = prompts[0].time - prompts[2].time;
+            if (timeDiff < 30000) {
+                score -= 3;
+                alerts.push("⚠ Rapid prompting detected. Try refining your prompt instead of sending multiple prompts.");
+            }
+        }
+
+        // Penalty 5: Very Large AI Output (output_tokens > 1000)
+        const recentOutput = stats.recentOutputTokens || 0;
+        if (recentOutput > 1000) {
+            score -= 4;
+            alerts.push("⚠ AI generated a very large response. Consider requesting shorter answers.");
+        }
+
+        // Penalty 6: Very High Token Usage (total > 1500 tokens)
+        const recentInput = stats.recentInputTokens || 0;
+        if ((recentInput + recentOutput) > 1500) {
+            score -= 5;
+            alerts.push("⚠ This prompt generated a high number of tokens.");
+        }
+
+        // Clamp score to 0–100
+        score = Math.max(0, Math.min(100, score));
+
+        // Save score and alerts as dedicated storage keys
+        chrome.storage.local.set({ score, alerts });
+    });
+}
+
 // Listen for messages from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "PROMPT_SUBMITTED") {
@@ -111,61 +180,13 @@ function handleNewPrompt(payload) {
     stats.co2Emitted += (payload.tokens * modelRates.co2);
     stats.costEstimated += (payload.tokens * modelRates.cost);
 
-    // Track for comparison in handleOutputGenerated
+    // Track for comparison in updateScore()
     stats.recentInputTokens = payload.tokens;
 
-    // --- NEW BEHAVIORAL SCORING SYSTEM ---
-    let scoreChange = 0;
-
-    // Existing Rule: Repeated prompt penalty
-    if (payload.isRepeated) scoreChange -= 5;
-
-    // Rule 1: Short Prompt Reward (< 80 chars) vs Penalty (< 10 chars)
-    if (payload.textLength < 10) {
-        scoreChange -= 2; // Penalty: Very Short
-    } else if (payload.textLength < 80) {
-        scoreChange += 2; // Reward: Short
-    }
-
-    // Rule 2: Unique Prompts Reward (Last 5 are all different)
-    if (stats.last_prompts.length >= 5) {
-        const uniqueTexts = new Set(stats.last_prompts.map(p => p.text));
-        if (uniqueTexts.size === 5) scoreChange += 3;
-    }
-
-    // Rule 4: Consistent Platform Usage (4+ in a row)
-    if (stats.last_prompts.length >= 4) {
-        const lastSite = stats.last_prompts[0].site;
-        const consistent = stats.last_prompts.slice(0, 4).every(p => p.site === lastSite);
-        if (consistent) scoreChange += 2;
-    }
-
-    // Rule 5: Improved Prompt Length (shorter than previous)
-    if (stats.last_prompts.length >= 2) {
-        if (stats.last_prompts[0].length < stats.last_prompts[1].length) {
-            scoreChange += 2;
-        }
-    }
-
-    // Penalty 1: Very Long Prompt (> 300 characters)
-    if (payload.textLength > 300) scoreChange -= 3;
-
-    // Penalty 3: Rapid Prompt Spamming (3 prompts within 30 seconds)
-    if (stats.last_prompts.length >= 3) {
-        const timeDiff = stats.last_prompts[0].time - stats.last_prompts[2].time;
-        if (timeDiff < 30000) scoreChange -= 3;
-    }
-
-    // Penalty 5: Excessive Prompting (> 8 prompts)
-    if (stats.promptsSent > 8) scoreChange -= 4;
-
-    // Legacy logic cleanup/re-application
-    if (payload.tokens > 500) scoreChange -= 2; // Keep mild penalty for high token inputs
-
-    // Apply score update
-    stats.efficiencyScore = Math.min(100, Math.max(0, stats.efficiencyScore + scoreChange));
-
-    chrome.storage.local.set({ stats });
+    // Save stats first, then recompute score from committed storage
+    chrome.storage.local.set({ stats }, () => {
+        updateScore();
+    });
   });
 }
 
@@ -201,27 +222,13 @@ function handleOutputGenerated(payload) {
     stats.co2Emitted += (payload.outputTokens * modelRates.co2);
     stats.costEstimated += (payload.outputTokens * modelRates.cost);
 
-    // --- OUTPUT BASED SCORING ---
-    let scoreChange = 0;
-    const inputTokens = stats.recentInputTokens || 1; // Fallback to avoid div by zero
-    const totalPromptTokens = inputTokens + payload.outputTokens;
+    // Track output tokens for Penalty 5 and 6
+    stats.recentOutputTokens = payload.outputTokens;
 
-    // Reward 3: Efficient Token Usage (Total < 200)
-    if (totalPromptTokens < 200) scoreChange += 4;
-
-    // Reward 6: Balanced Output Size (Output < 4x Input)
-    if (payload.outputTokens < 4 * inputTokens) scoreChange += 3;
-
-    // Penalty 2: Very Large AI Output (> 1000 tokens)
-    if (payload.outputTokens > 1000) scoreChange -= 4;
-
-    // Penalty 6: High Token Cost Prompt (total_tokens > 1500)
-    if (totalPromptTokens > 1500) scoreChange -= 5;
-
-    // Apply score update
-    stats.efficiencyScore = Math.min(100, Math.max(0, stats.efficiencyScore + scoreChange));
-
-    chrome.storage.local.set({ stats });
+    // Save stats first, then recompute score from committed storage
+    chrome.storage.local.set({ stats }, () => {
+        updateScore();
+    });
   });
 }
 

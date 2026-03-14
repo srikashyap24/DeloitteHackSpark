@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadStats() {
-    chrome.storage.local.get(["stats"], (result) => {
+    chrome.storage.local.get(["stats", "score", "alerts"], (result) => {
         const defaultStats = {
             tokensUsed: 0,
             inputTokens: 0,
@@ -45,15 +45,17 @@ function loadStats() {
         document.getElementById("co2-val").innerText = stats.co2Emitted.toFixed(5) + " kg";
         // document.getElementById("cost-val").innerText = "$" + stats.costEstimated.toFixed(5);
         
+        // Use dedicated score from calculateScore() — fallback to stats.efficiencyScore
+        const displayScore = (typeof result.score === 'number') ? result.score : stats.efficiencyScore;
         const scoreCircle = document.getElementById("score-circle");
         const scoreValue = document.getElementById("score-value");
-        scoreValue.innerText = stats.efficiencyScore;
+        scoreValue.innerText = displayScore;
         
         // Color code score and add glow effects
-        if (stats.efficiencyScore > 80) {
+        if (displayScore > 80) {
             scoreCircle.style.borderColor = "#4ade80"; // green
             scoreCircle.style.boxShadow = "0 0 15px rgba(74, 222, 128, 0.4)";
-        } else if (stats.efficiencyScore > 50) {
+        } else if (displayScore > 50) {
             scoreCircle.style.borderColor = "#facc15"; // yellow
             scoreCircle.style.boxShadow = "0 0 15px rgba(250, 204, 21, 0.4)";
         } else {
@@ -61,7 +63,9 @@ function loadStats() {
             scoreCircle.style.boxShadow = "0 0 15px rgba(239, 68, 68, 0.4)";
         }
 
-        updateAlertsAndTips(stats);
+        // Pass dedicated alerts array collected from calculateScore()
+        const storedAlerts = Array.isArray(result.alerts) ? result.alerts : [];
+        updateAlertsAndTips(stats, storedAlerts);
         updateBadges(stats);
         updatePromptIntelligence(stats);
     });
@@ -140,34 +144,38 @@ function updatePromptIntelligence(stats) {
 }
 
 
-function updateAlertsAndTips(stats) {
+function updateAlertsAndTips(stats, storedAlerts = []) {
     const alertsList = document.getElementById("alerts-list");
     alertsList.innerHTML = "";
 
-    const tips = [];
-    
-    if (stats.efficiencyScore > 90 && stats.promptsSent > 0) {
-        tips.push({ text: "Great job! You are prompting efficiently.", type: "tip" });
-    }
+    // Build alert items from the dedicated calculateScore() alerts array
+    const activeAlerts = storedAlerts.map(text => ({ text, type: "alert" }));
 
+    // Fall back to extra checks from stats (high usage, repeated prompts)
     if (stats.tokensUsed > 10000) {
-        tips.push({ text: "⚠ High AI energy usage detected. Consider smaller scopes.", type: "alert" });
+        activeAlerts.push({ text: "⚠ High AI energy usage detected. Consider smaller scopes.", type: "alert" });
     }
-
     if (stats.repeatedPrompts > 2) {
-        tips.push({ text: "⚠ Repeated prompts detected. Try grouping questions.", type: "alert" });
-    }
-    
-    if (tips.length === 0) {
-        tips.push({ text: "• Use smaller AI models when possible", type: "tip" });
-        tips.push({ text: "• Reduce prompt length", type: "tip" });
-        tips.push({ text: "• Avoid repeated prompts", type: "tip" });
+        activeAlerts.push({ text: "⚠ Repeated prompts detected. Try grouping questions.", type: "alert" });
     }
 
-    tips.forEach(tip => {
+    // Only show positive tip when there are NO active alerts
+    const activeTips = [];
+    if (activeAlerts.length === 0 && stats.promptsSent > 0) {
+        activeTips.push({ text: "Great job! You are prompting efficiently.", type: "tip" });
+    }
+
+    // Default fallback when there are no prompts yet
+    if (activeAlerts.length === 0 && activeTips.length === 0) {
+        activeTips.push({ text: "• Use smaller AI models when possible", type: "tip" });
+        activeTips.push({ text: "• Reduce prompt length", type: "tip" });
+        activeTips.push({ text: "• Avoid repeated prompts", type: "tip" });
+    }
+
+    [...activeAlerts, ...activeTips].forEach(msg => {
         const li = document.createElement("li");
-        li.innerText = tip.text;
-        li.className = tip.type; // 'alert' or 'tip'
+        li.innerText = msg.text;
+        li.className = msg.type;
         alertsList.appendChild(li);
     });
 }
