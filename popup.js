@@ -83,16 +83,32 @@ function updatePromptIntelligence(stats) {
     const avgLength = Math.round(totalLength / lastPrompts.length);
     document.getElementById("intel-avg-len").innerText = `${avgLength}`;
     
-    // 2. Count Platforms Used
-    const platformCounts = {};
-    lastPrompts.forEach(p => {
-        platformCounts[p.site] = (platformCounts[p.site] || 0) + 1;
+    // 2. Count Platforms Used and most-used model per platform.
+    const platformStats = {};
+    lastPrompts.forEach((p) => {
+        const site = p.site || "Unknown";
+        if (!platformStats[site]) {
+            platformStats[site] = { count: 0, models: {} };
+        }
+        platformStats[site].count += 1;
+
+        const model = typeof p.model === "string" ? p.model.trim() : "";
+        if (model) {
+            platformStats[site].models[model] = (platformStats[site].models[model] || 0) + 1;
+        }
     });
     
     const platformsList = document.getElementById("intel-platforms-list");
     platformsList.innerHTML = "";
-    Object.entries(platformCounts).forEach(([site, count]) => {
-        platformsList.innerHTML += `<li>${site} – ${count} prompt${count > 1 ? 's' : ''}</li>`;
+    Object.entries(platformStats).forEach(([site, info]) => {
+        const usageModels = stats.aiUsage?.[site]?.models || {};
+        const mergedModels = { ...usageModels };
+        Object.entries(info.models).forEach(([model, count]) => {
+            mergedModels[model] = (mergedModels[model] || 0) + count;
+        });
+        const topModel = Object.entries(mergedModels).sort((a, b) => b[1] - a[1])[0]?.[0] || "";
+        const siteLabel = topModel ? `${site} (${topModel})` : site;
+        platformsList.innerHTML += `<li>${siteLabel} – ${info.count} prompt${info.count > 1 ? 's' : ''}</li>`;
     });
     
     // 3. Generate Advice Rules based on data
@@ -107,7 +123,7 @@ function updatePromptIntelligence(stats) {
     if (avgLength < 40) {
         advices.push("• Prompts are very short. Adding more context may improve response quality.");
     }
-    if (Object.keys(platformCounts).length > 1) {
+    if (Object.keys(platformStats).length > 1) {
         advices.push("• Good practice: you are comparing results across multiple AI systems.");
     }
     if (lastPrompts.length === 5) {

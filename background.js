@@ -58,14 +58,18 @@ function handleNewPrompt(payload) {
       stats.repeatedPrompts += 1;
     }
     
-    // Track usage dynamically by AI platform name
-    // Track usage completely separated by AI Website
-    const platformId = payload.aiType || "unknown"; // Use payload.aiType as platformId
+    // Track usage dynamically by AI platform name and model.
+    const platformId = payload.aiType || "unknown";
+    const aiModel = sanitizeModelName(payload.aiModel);
     if (!stats.aiUsage[platformId]) {
-        stats.aiUsage[platformId] = { prompts: 0, tokens: 0 };
+        stats.aiUsage[platformId] = { prompts: 0, tokens: 0, models: {} };
     }
+    if (!stats.aiUsage[platformId].models) stats.aiUsage[platformId].models = {};
     stats.aiUsage[platformId].prompts += 1;
     stats.aiUsage[platformId].tokens += payload.tokens;
+    if (aiModel) {
+      stats.aiUsage[platformId].models[aiModel] = (stats.aiUsage[platformId].models[aiModel] || 0) + 1;
+    }
 
     // Track Last 5 Prompts for Prompt Intelligence insights
     if (!stats.last_prompts) {
@@ -76,6 +80,7 @@ function handleNewPrompt(payload) {
     stats.last_prompts.unshift({
         text: payload.text || "",
         site: platformId,
+        model: aiModel || "",
         length: payload.textLength || 0,
         time: payload.timestamp || Date.now()
     });
