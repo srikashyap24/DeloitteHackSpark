@@ -12,56 +12,38 @@ function loadStats() {
     chrome.storage.local.get(["stats"], (result) => {
         const defaultStats = {
             tokensUsed: 0,
+            inputTokens: 0,
+            outputTokens: 0,
+            totalTokens: 0,
             promptsSent: 0,
             repeatedPrompts: 0,
             energyConsumed: 0,
             waterConsumed: 0,
             co2Emitted: 0,
+            costEstimated: 0,
             efficiencyScore: 100,
             aiUsage: {}
         };
         
         const stats = result.stats || defaultStats;
         
-        // Ensure aiUsage exists for backwards compatibility
-        if (!stats.aiUsage) {
-            stats.aiUsage = {};
-        }
+        // Ensure properties exist for backwards compatibility with old saves
+        if (!stats.aiUsage) stats.aiUsage = {};
+        if (typeof stats.costEstimated === 'undefined') stats.costEstimated = 0;
         
+        // Safely parse tokens to avoid NaN
+        const inputTokens = Number(stats.inputTokens) || 0;
+        const outputTokens = Number(stats.outputTokens) || 0;
+        const totalTokens = Number(stats.totalTokens) || 0;
+
         // Update DOM
-        document.getElementById("tokens-val").innerText = Math.round(stats.tokensUsed).toLocaleString();
+        document.getElementById("tokens-input").innerText = Math.round(inputTokens).toLocaleString();
+        document.getElementById("tokens-output").innerText = Math.round(outputTokens).toLocaleString();
+        document.getElementById("tokens-total").innerText = Math.round(totalTokens).toLocaleString();
         document.getElementById("energy-val").innerText = stats.energyConsumed.toFixed(5);
         document.getElementById("water-val").innerText = stats.waterConsumed.toFixed(5);
         document.getElementById("co2-val").innerText = stats.co2Emitted.toFixed(5);
-        
-        // Update AI Platform Usage dynamically
-        const aiContainer = document.getElementById("ai-usage-container");
-        aiContainer.innerHTML = "";
-        
-        let hasUsage = false;
-        
-        // Sort platforms by usage count (highest first)
-        const sortedPlatforms = Object.entries(stats.aiUsage)
-            .filter(([_, count]) => count > 0)
-            .sort((a, b) => b[1] - a[1]);
-
-        sortedPlatforms.forEach(([platformName, count]) => {
-            hasUsage = true;
-            aiContainer.innerHTML += `
-                <div class="ai-platform">
-                    <span class="platform-name">${platformName}</span>
-                    <span class="platform-count">${count} prompts</span>
-                </div>
-            `;
-        });
-        
-        if (!hasUsage) {
-            aiContainer.innerHTML = `
-                <div class="ai-platform" style="justify-content: center;">
-                    <span class="platform-name" style="color: var(--text-muted);">No AI usage tracked yet.</span>
-                </div>
-            `;
-        }
+        document.getElementById("cost-val").innerText = "$" + stats.costEstimated.toFixed(5);
         
         const scoreCircle = document.getElementById("score-circle");
         const scoreValue = document.getElementById("score-value");
@@ -81,8 +63,66 @@ function loadStats() {
 
         updateAlertsAndTips(stats);
         updateBadges(stats);
+        updatePromptIntelligence(stats);
     });
 }
+
+function updatePromptIntelligence(stats) {
+    const lastPrompts = stats.last_prompts || [];
+    
+    // Default Empty State
+    if (lastPrompts.length === 0) {
+        document.getElementById("intel-avg-len").innerText = "0";
+        document.getElementById("intel-platforms-list").innerHTML = '<li><span style="color:var(--text-muted)">None recorded</span></li>';
+        document.getElementById("intel-advice-list").innerHTML = '<li><span style="color:var(--text-muted)">Send prompts to get AI efficiency advice!</span></li>';
+        return;
+    }
+    
+    // 1. Calculate Average Length
+    const totalLength = lastPrompts.reduce((sum, p) => sum + p.length, 0);
+    const avgLength = Math.round(totalLength / lastPrompts.length);
+    document.getElementById("intel-avg-len").innerText = `${avgLength}`;
+    
+    // 2. Count Platforms Used
+    const platformCounts = {};
+    lastPrompts.forEach(p => {
+        platformCounts[p.site] = (platformCounts[p.site] || 0) + 1;
+    });
+    
+    const platformsList = document.getElementById("intel-platforms-list");
+    platformsList.innerHTML = "";
+    Object.entries(platformCounts).forEach(([site, count]) => {
+        platformsList.innerHTML += `<li>${site} – ${count} prompt${count > 1 ? 's' : ''}</li>`;
+    });
+    
+    // 3. Generate Advice Rules based on data
+    const adviceList = document.getElementById("intel-advice-list");
+    adviceList.innerHTML = "";
+    
+    const advices = [];
+    
+    if (avgLength > 200) {
+        advices.push("• Try breaking long prompts into smaller tasks.");
+    }
+    if (avgLength < 40) {
+        advices.push("• Prompts are very short. Adding more context may improve response quality.");
+    }
+    if (Object.keys(platformCounts).length > 1) {
+        advices.push("• Good practice: you are comparing results across multiple AI systems.");
+    }
+    if (lastPrompts.length === 5) {
+        advices.push("• Consider reusing optimized prompts to reduce repeated token usage.");
+    }
+    
+    if (advices.length === 0) {
+        advices.push("• Your prompt patterns are looking balanced and efficient!");
+    }
+    
+    advices.forEach(adv => {
+        adviceList.innerHTML += `<li>${adv}</li>`;
+    });
+}
+
 
 function updateAlertsAndTips(stats) {
     const alertsList = document.getElementById("alerts-list");
