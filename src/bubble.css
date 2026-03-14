@@ -47,7 +47,7 @@
 }
 
 /* Stagger animation per bubble so they don't all move together */
-.gp-bubble--score { animation-delay: 0s;    width: 80px; height: 80px; }
+.gp-bubble--score { animation-delay: 0s;    width: 80px; height: 80px; cursor: pointer; }
 .gp-bubble--water { animation-delay: 1.5s;  width: 60px; height: 60px; }
 .gp-bubble--alert { animation-delay: 3s;    width: 40px; height: 40px; font-size: 18px; }
 

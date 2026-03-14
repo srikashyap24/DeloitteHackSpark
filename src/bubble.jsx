@@ -59,8 +59,12 @@ export default function GreenPromptBubble() {
         <div className="gp-tooltip">💧 Water used by AI prompts</div>
       </div>
 
-      {/* Score bubble – largest */}
-      <div className="gp-bubble gp-bubble--score">
+      {/* Score bubble – largest, clickable */}
+      <div
+        className="gp-bubble gp-bubble--score"
+        onClick={() => window.open(chrome.runtime.getURL("popup.html"), "_blank")}
+        title="Open GreenPrompt dashboard"
+      >
         <span className="gp-score-value">{score}</span>
         <span className="gp-score-label">Score</span>
         <div className="gp-tooltip">🌿 GreenPrompt score: {score}/100</div>
