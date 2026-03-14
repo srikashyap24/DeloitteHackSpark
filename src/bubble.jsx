@@ -1,61 +1,70 @@
 import React, { useState, useEffect } from "react";
 import "./bubble.css";
 
-// Returns bubble style (gradient + shadow) based on score
-function getBubbleStyle(score) {
-  if (score >= 90) {
-    return {
-      background: "radial-gradient(circle at 30% 30%, #6ee7b7, #10b981)",
-      boxShadow: "0 6px 24px rgba(16, 185, 129, 0.5)",
-    };
-  } else if (score >= 70) {
-    return {
-      background: "radial-gradient(circle at 30% 30%, #fde68a, #f59e0b)",
-      boxShadow: "0 6px 24px rgba(245, 158, 11, 0.5)",
-    };
-  } else {
-    return {
-      background: "radial-gradient(circle at 30% 30%, #fca5a5, #ef4444)",
-      boxShadow: "0 6px 24px rgba(239, 68, 68, 0.5)",
-    };
-  }
+// Format water value compactly: "0.00123 L" → "0.001 L"
+function formatWater(val) {
+  if (!val || val === 0) return "0 L";
+  if (val < 0.001) return "<0.001 L";
+  if (val < 1) return val.toFixed(3) + " L";
+  return val.toFixed(2) + " L";
 }
 
-function GreenPromptBubble() {
-  const [score, setScore] = useState(100);
+export default function GreenPromptBubble() {
+  const [score, setScore]   = useState(100);
+  const [water, setWater]   = useState(0);
+  const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
-    if (typeof chrome !== "undefined" && chrome.storage) {
-      // Load current score on mount
-      chrome.storage.local.get(["score"], (data) => {
-        if (typeof data.score === "number") {
-          setScore(data.score);
-        }
-      });
+    if (typeof chrome === "undefined" || !chrome.storage) return;
 
-      // Live listener for score changes
-      const listener = (changes) => {
-        if (changes.score && typeof changes.score.newValue === "number") {
-          setScore(changes.score.newValue);
-        }
-      };
-      chrome.storage.onChanged.addListener(listener);
-      return () => chrome.storage.onChanged.removeListener(listener);
-    }
+    // Initial load
+    chrome.storage.local.get(["score", "alerts", "stats"], (data) => {
+      if (typeof data.score === "number") setScore(data.score);
+      if (Array.isArray(data.alerts)) setAlerts(data.alerts);
+      if (data.stats?.waterConsumed != null) setWater(data.stats.waterConsumed);
+    });
+
+    // Live updates
+    const listener = (changes) => {
+      if (changes.score?.newValue != null)  setScore(changes.score.newValue);
+      if (changes.alerts?.newValue != null) setAlerts(changes.alerts.newValue);
+      if (changes.stats?.newValue?.waterConsumed != null)
+        setWater(changes.stats.newValue.waterConsumed);
+    };
+    chrome.storage.onChanged.addListener(listener);
+    return () => chrome.storage.onChanged.removeListener(listener);
   }, []);
 
-  const bubbleStyle = getBubbleStyle(score);
+  const latestAlert = alerts[0] || null;
 
   return (
-    <div className="greenprompt-bubble" style={bubbleStyle}>
-      <span className="greenprompt-score">{score}</span>
-      <span className="greenprompt-label">score</span>
-      <div className="greenprompt-tooltip">
-        <strong>GreenPrompt</strong>
-        {score} / 100
+    <div className="gp-stack">
+      {/* Decorative mini bubbles for "rising" aesthetic */}
+      <div className="gp-deco" />
+      <div className="gp-deco" />
+      <div className="gp-deco" />
+
+      {/* Alert bubble – only show if any alerts */}
+      {latestAlert && (
+        <div className="gp-bubble gp-bubble--alert">
+          !
+          <div className="gp-tooltip">{latestAlert}</div>
+        </div>
+      )}
+
+      {/* Water bubble */}
+      <div className="gp-bubble gp-bubble--water">
+        <span className="gp-water-value">{formatWater(water)}</span>
+        <span className="gp-water-label">Water</span>
+        <div className="gp-tooltip">💧 Water used by AI prompts</div>
+      </div>
+
+      {/* Score bubble – largest */}
+      <div className="gp-bubble gp-bubble--score">
+        <span className="gp-score-value">{score}</span>
+        <span className="gp-score-label">Score</span>
+        <div className="gp-tooltip">🌿 GreenPrompt score: {score}/100</div>
       </div>
     </div>
   );
 }
-
-export default GreenPromptBubble;

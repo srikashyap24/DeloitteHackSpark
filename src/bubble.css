@@ -1,74 +1,102 @@
-.greenprompt-bubble {
+/* ── Bubble Stack Container ─────────────────────── */
+.gp-stack {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 68px;
-  height: 68px;
+  z-index: 2147483647;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ── Shared Plasma Blue Style ───────────────────── */
+.gp-bubble {
+  pointer-events: all;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-weight: 700;
-  color: white;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
-  z-index: 2147483647;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
   user-select: none;
+  color: #fff;
+  font-weight: 700;
+  position: relative;
+  /* Plasma blue gradient + glow */
+  background: radial-gradient(circle at 30% 30%, #8EDBFF, #3ABEFF);
+  box-shadow:
+    0 6px 20px rgba(58, 190, 255, 0.45),
+    inset 0 0 12px rgba(255, 255, 255, 0.25);
+  /* Floating animation */
+  animation: gp-float 6s ease-in-out infinite;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
-.greenprompt-bubble:hover {
-  transform: scale(1.1);
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+.gp-bubble:hover {
+  transform: scale(1.08);
+  box-shadow:
+    0 10px 28px rgba(58, 190, 255, 0.55),
+    inset 0 0 16px rgba(255, 255, 255, 0.3);
+  animation-play-state: paused;
+  z-index: 2;
 }
 
-.greenprompt-score {
-  font-size: 22px;
-  line-height: 1;
-  letter-spacing: -0.5px;
+/* Stagger animation per bubble so they don't all move together */
+.gp-bubble--score { animation-delay: 0s;    width: 80px; height: 80px; }
+.gp-bubble--water { animation-delay: 1.5s;  width: 60px; height: 60px; }
+.gp-bubble--alert { animation-delay: 3s;    width: 40px; height: 40px; font-size: 18px; }
+
+/* ── Float keyframes ────────────────────────────── */
+@keyframes gp-float {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
 }
 
-.greenprompt-label {
-  font-size: 8px;
-  opacity: 0.85;
-  margin-top: 1px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+/* ── Text inside bubbles ────────────────────────── */
+.gp-score-value { font-size: 26px; line-height: 1; letter-spacing: -1px; }
+.gp-score-label { font-size: 8px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 2px; }
+.gp-water-value { font-size: 14px; line-height: 1; }
+.gp-water-label { font-size: 7px; opacity: 0.8; text-transform: uppercase; margin-top: 2px; }
+
+/* ── Decorative mini bubbles ────────────────────── */
+.gp-deco {
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.35) 0%, transparent 55%),
+              rgba(58, 190, 255, 0.35);
+  box-shadow: 0 3px 10px rgba(58, 190, 255, 0.3);
+  animation: gp-float 4s ease-in-out infinite;
 }
 
-/* Tooltip */
-.greenprompt-tooltip {
+.gp-deco:nth-child(1) { width: 16px; height: 16px; animation-delay: 0s; }
+.gp-deco:nth-child(2) { width: 10px; height: 10px; animation-delay: 0.9s; align-self: flex-start; margin-right: 4px; }
+.gp-deco:nth-child(3) { width: 13px; height: 13px; animation-delay: 1.8s; align-self: center; }
+
+
+/* ── Tooltip ────────────────────────────────────── */
+.gp-tooltip {
+  display: none;
   position: absolute;
-  bottom: calc(100% + 10px);
-  right: 0;
-  background: rgba(15, 15, 15, 0.92);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(10, 10, 20, 0.88);
+  color: #f3f4f6;
+  font-weight: 500;
   font-size: 12px;
+  padding: 6px 11px;
+  border-radius: 8px;
   white-space: nowrap;
   pointer-events: none;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
   border: 1px solid rgba(255,255,255,0.1);
-  backdrop-filter: blur(8px);
-  min-width: 130px;
-  text-align: center;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
 }
 
-.greenprompt-bubble:hover .greenprompt-tooltip {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.greenprompt-tooltip strong {
+.gp-bubble:hover .gp-tooltip {
   display: block;
-  font-size: 11px;
-  opacity: 0.6;
-  margin-bottom: 3px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
