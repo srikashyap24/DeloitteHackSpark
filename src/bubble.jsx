@@ -4,7 +4,7 @@ import "./bubble.css";
 // ── Single shared color palette ───────────────────
 // All bubbles use the same color determined by the score.
 function getScoreColor(score) {
-  if (score >= 90) return "#205D82"; // dark blue  – efficient
+  if (score >= 90) return "#2563EB"; // dark blue  – efficient
   if (score >= 75) return "#9BC9D6"; // light blue – good
   if (score >= 60) return "#E7CD90"; // yellow     – moderate
   if (score >= 40) return "#F28546"; // orange     – poor

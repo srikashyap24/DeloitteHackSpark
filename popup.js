@@ -1,6 +1,6 @@
 // ── Shared color palette (matches bubble widget) ──────────────────────────────
 function getScoreColor(score) {
-    if (score >= 90) return "#205D82";
+    if (score >= 90) return "#2563EB";
     if (score >= 75) return "#9BC9D6";
     if (score >= 60) return "#E7CD90";
     if (score >= 40) return "#F28546";
