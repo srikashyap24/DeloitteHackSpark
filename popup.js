@@ -1,3 +1,12 @@
+// ── Shared color palette (matches bubble widget) ──────────────────────────────
+function getScoreColor(score) {
+    if (score >= 90) return "#205D82";
+    if (score >= 75) return "#9BC9D6";
+    if (score >= 60) return "#E7CD90";
+    if (score >= 40) return "#F28546";
+    return "#E74343";
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     loadStats();
 
@@ -51,17 +60,22 @@ function loadStats() {
         const scoreValue = document.getElementById("score-value");
         scoreValue.innerText = displayScore;
         
-        // Color code score and add glow effects
-        if (displayScore > 80) {
-            scoreCircle.style.borderColor = "#4ade80"; // green
-            scoreCircle.style.boxShadow = "0 0 15px rgba(74, 222, 128, 0.4)";
-        } else if (displayScore > 50) {
-            scoreCircle.style.borderColor = "#facc15"; // yellow
-            scoreCircle.style.boxShadow = "0 0 15px rgba(250, 204, 21, 0.4)";
-        } else {
-            scoreCircle.style.borderColor = "#ef4444"; // red
-            scoreCircle.style.boxShadow = "0 0 15px rgba(239, 68, 68, 0.4)";
+        // Apply unified palette color based on score
+        const color = getScoreColor(displayScore);
+        scoreCircle.style.borderColor = color;
+        scoreCircle.style.boxShadow = `0 0 18px ${color}66`;
+        scoreCircle.style.transition = "border-color 0.4s ease, box-shadow 0.4s ease";
+
+        // Apply palette color to popup header + section titles
+        const header = document.querySelector(".header, header, .popup-header, h1");
+        if (header) {
+            header.style.color = color;
+            header.style.transition = "color 0.4s ease";
         }
+        document.querySelectorAll(".section-title").forEach(el => {
+            el.style.color = color;
+            el.style.transition = "color 0.4s ease";
+        });
 
         // Pass dedicated alerts array collected from calculateScore()
         const storedAlerts = Array.isArray(result.alerts) ? result.alerts : [];

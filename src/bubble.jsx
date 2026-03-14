@@ -1,39 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./bubble.css";
 
-// ── Brand Palette ─────────────────────────────────
-const PALETTE = {
-  darkBlue:  "#205D82",
-  lightBlue: "#9BC9D6",
-  yellow:    "#E7CD90",
-  orange:    "#F28546",
-  red:       "#E74343",
-};
-
-// Score bubble: color reflects sustainability level
+// ── Single shared color palette ───────────────────
+// All bubbles use the same color determined by the score.
 function getScoreColor(score) {
-  if (score >= 90) return PALETTE.darkBlue;
-  if (score >= 75) return PALETTE.lightBlue;
-  if (score >= 60) return PALETTE.yellow;
-  if (score >= 40) return PALETTE.orange;
-  return PALETTE.red;
-}
-
-// Water bubble: shifts from cool to warm as water usage rises
-function getWaterColor(water) {
-  if (water < 0.05)  return PALETTE.lightBlue;
-  if (water < 0.5)   return PALETTE.yellow;
-  if (water < 2)     return PALETTE.orange;
-  return PALETTE.red;
-}
-
-// Alert bubble: red if the alert text sounds severe, else orange
-function getAlertColor(alertText) {
-  if (!alertText) return PALETTE.orange;
-  const severe = ["repeated", "high", "rapid", "large", "excessive"];
-  return severe.some(w => alertText.toLowerCase().includes(w))
-    ? PALETTE.red
-    : PALETTE.orange;
+  if (score >= 90) return "#205D82"; // dark blue  – efficient
+  if (score >= 75) return "#9BC9D6"; // light blue – good
+  if (score >= 60) return "#E7CD90"; // yellow     – moderate
+  if (score >= 40) return "#F28546"; // orange     – poor
+  return "#E74343";                  // red        – critical
 }
 
 // Format water compactly
@@ -69,33 +44,26 @@ export default function GreenPromptBubble() {
   }, []);
 
   const latestAlert = alerts[0] || null;
-  const scoreColor  = getScoreColor(score);
-  const waterColor  = getWaterColor(water);
-  const alertColor  = getAlertColor(latestAlert);
+  // One color for everything — driven purely by score
+  const color = getScoreColor(score);
 
   return (
     <div className="gp-stack">
       {/* Decorative rising mini-bubbles */}
-      <div className="gp-deco" />
-      <div className="gp-deco" />
-      <div className="gp-deco" />
+      <div className="gp-deco" style={{ background: color, opacity: 0.4 }} />
+      <div className="gp-deco" style={{ background: color, opacity: 0.3 }} />
+      <div className="gp-deco" style={{ background: color, opacity: 0.35 }} />
 
-      {/* Alert bubble – conditional */}
+      {/* Alert bubble – only shown when alerts exist */}
       {latestAlert && (
-        <div
-          className="gp-bubble gp-bubble--alert"
-          style={{ background: alertColor }}
-        >
+        <div className="gp-bubble gp-bubble--alert" style={{ background: color }}>
           !
           <div className="gp-tooltip">{latestAlert}</div>
         </div>
       )}
 
       {/* Water bubble */}
-      <div
-        className="gp-bubble gp-bubble--water"
-        style={{ background: waterColor }}
-      >
+      <div className="gp-bubble gp-bubble--water" style={{ background: color }}>
         <span className="gp-water-value">{formatWater(water)}</span>
         <span className="gp-water-label">Water</span>
         <div className="gp-tooltip">💧 Water used by AI prompts</div>
@@ -104,7 +72,7 @@ export default function GreenPromptBubble() {
       {/* Score bubble – largest, clickable */}
       <div
         className="gp-bubble gp-bubble--score"
-        style={{ background: scoreColor }}
+        style={{ background: color }}
         onClick={() => window.open(chrome.runtime.getURL("popup.html"), "_blank")}
         title="Open GreenPrompt dashboard"
       >
