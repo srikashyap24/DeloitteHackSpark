@@ -46,9 +46,20 @@
 }
 
 /* Stagger animation per bubble so they don't all move together */
-.gp-bubble--score { animation-delay: 0s;    width: 80px; height: 80px; cursor: pointer; }
+.gp-bubble--score { animation-delay: 0s;    width: 80px; height: 80px; }
 .gp-bubble--water { animation-delay: 1.5s;  width: 60px; height: 60px; }
 .gp-bubble--alert { animation-delay: 3s;    width: 40px; height: 40px; font-size: 18px; }
+
+/* Score bubble is informational only: no interactive hover treatment */
+.gp-bubble--score:hover {
+  transform: none;
+  box-shadow:
+    0 0 10px color-mix(in srgb, var(--gp-bubble-color, #2563EB) 45%, transparent),
+    0 0 22px color-mix(in srgb, var(--gp-bubble-color, #2563EB) 25%, transparent),
+    inset 0 0 10px rgba(255, 255, 255, 0.15);
+  animation-play-state: running;
+  z-index: auto;
+}
 
 /* ── Float keyframes ────────────────────────────── */
 @keyframes gp-float {

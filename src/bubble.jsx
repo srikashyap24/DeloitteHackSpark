@@ -69,12 +69,11 @@ export default function EcoPromptBubble() {
         <div className="gp-tooltip">💧 Water used by AI prompts</div>
       </div>
 
-      {/* Score bubble – largest, clickable */}
+      {/* Score bubble – largest */}
       <div
         className="gp-bubble gp-bubble--score"
         style={{ background: color }}
-        onClick={() => window.open(chrome.runtime.getURL("popup.html"), "_blank")}
-        title="Open EcoPrompt dashboard"
+        title="EcoPrompt score"
       >
         <span className="gp-score-value">{score}</span>
         <span className="gp-score-label">Score</span>
