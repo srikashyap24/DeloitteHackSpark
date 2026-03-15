@@ -1,8 +1,8 @@
 <div align="center">
-  <img src="icons/icon128.png" alt="GreenPrompt Logo" width="128" />
+  <img src="icons/icon128.png" alt="EcoPrompt Logo" width="128" />
 </div>
 
-# GreenPrompt – AI Sustainability Monitor
+# EcoPrompt – AI Sustainability Monitor
 
 **A browser extension that tracks AI prompt usage and estimates its environmental impact in real time, including energy consumption, water usage, and CO₂ emissions.**
 
@@ -14,7 +14,7 @@ AI interactions consume massive amounts of real-world resources—including elec
 
 ## 💡 The Solution
 
-**GreenPrompt** monitors user prompts across major AI platforms and translates token usage into tangible environmental impact metrics. By offering real-time feedback, behavioral nudges, and a dynamic sustainability score, the extension encourages highly efficient, responsible AI usage.
+**EcoPrompt** monitors user prompts across major AI platforms and translates token usage into tangible environmental impact metrics. By offering real-time feedback, behavioral nudges, and a dynamic sustainability score, the extension encourages highly efficient, responsible AI usage.
 
 ---
 
@@ -136,7 +136,7 @@ The entire UI color theme changes based on your current score:
 **Usage:**
 1. Pin the extension to your Chrome toolbar.
 2. Open an AI platform (such as ChatGPT, Claude, or Gemini).
-3. Send prompts normally—GreenPrompt tracks your usage automatically in the background.
+3. Send prompts normally—EcoPrompt tracks your usage automatically in the background.
 4. Click the floating score bubble or the extension icon to view your environmental impact metrics, efficiency score, and prompt intelligence insights.
 
 ---

@@ -233,7 +233,7 @@ function updateBadges(stats, storedAlerts = []) {
     // These badges ONLY appear if the most recent prompt triggered no penalties (positive reinforcement)
     if (!penaltyTriggered) {
         if (stats.tokensUsed < 5000 && stats.promptsSent >= 5) {
-            rewardsContainer.innerHTML += `<span class="badge" title="Low token usage">🌱 Green AI User</span>`;
+            rewardsContainer.innerHTML += `<span class="badge" title="Low token usage">🌱 Eco AI User</span>`;
         }
         if (stats.efficiencyScore >= 95 && stats.promptsSent >= 2) {
             rewardsContainer.innerHTML += `<span class="badge" title="Short efficient prompts">⚡ Efficient Prompter</span>`;
