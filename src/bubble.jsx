@@ -19,7 +19,7 @@ function formatWater(val) {
   return val.toFixed(2) + " L";
 }
 
-export default function GreenPromptBubble() {
+export default function EcoPromptBubble() {
   const [score, setScore]   = useState(100);
   const [water, setWater]   = useState(0);
   const [alerts, setAlerts] = useState([]);
@@ -74,11 +74,11 @@ export default function GreenPromptBubble() {
         className="gp-bubble gp-bubble--score"
         style={{ background: color }}
         onClick={() => window.open(chrome.runtime.getURL("popup.html"), "_blank")}
-        title="Open GreenPrompt dashboard"
+        title="Open EcoPrompt dashboard"
       >
         <span className="gp-score-value">{score}</span>
         <span className="gp-score-label">Score</span>
-        <div className="gp-tooltip">🌿 GreenPrompt score: {score}/100</div>
+        <div className="gp-tooltip">🌿 EcoPrompt score: {score}/100</div>
       </div>
     </div>
   );

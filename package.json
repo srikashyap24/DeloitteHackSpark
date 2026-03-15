@@ -1,7 +1,7 @@
 {
-  "name": "greenprompt-extension",
+  "name": "ecoprompt-extension",
   "version": "1.0.0",
-  "description": "GreenPrompt AI Sustainability Monitor – bubble widget build",
+  "description": "EcoPrompt AI Sustainability Monitor – bubble widget build",
   "scripts": {
     "build": "webpack --mode production",
     "watch": "webpack --mode development --watch"

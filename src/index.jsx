@@ -1,18 +1,18 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import GreenPromptBubble from "./bubble.jsx";
+import EcoPromptBubble from "./bubble.jsx";
 
 function mount() {
-  let container = document.getElementById("greenprompt-root");
+  let container = document.getElementById("ecoprompt-root");
   if (!container) {
     container = document.createElement("div");
-    container.id = "greenprompt-root";
+    container.id = "ecoprompt-root";
     document.documentElement.appendChild(container);
   }
   const root = createRoot(container);
   root.render(
     <React.StrictMode>
-      <GreenPromptBubble />
+      <EcoPromptBubble />
     </React.StrictMode>
   );
 }

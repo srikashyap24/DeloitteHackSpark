@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "GreenPrompt \u2013 AI Sustainability Monitor",
+  "name": "EcoPrompt \u2013 AI Sustainability Monitor",
   "version": "1.0",
   "description": "Monitors AI prompt usage and converts it into sustainability metrics such as energy, water, and CO2.",
   "permissions": [
