@@ -1,3 +1,19 @@
+// ── Allowlist: only run on supported AI platforms ─────────────────────────────
+const ALLOWED_SITES = [
+  "chat.openai.com",
+  "chatgpt.com",
+  "claude.ai",
+  "gemini.google.com",
+  "perplexity.ai",
+  "poe.com",
+  "copilot.microsoft.com"
+];
+
+if (!ALLOWED_SITES.includes(window.location.hostname)) {
+  // Not an AI platform — stop all tracking
+  throw new Error("[EcoPrompt] Site not in allowlist, skipping.");
+}
+
 // Function to rough guess tokens
 function estimateTokens(text) {
   return Math.ceil(text.length / 4);
