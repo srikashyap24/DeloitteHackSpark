@@ -12,33 +12,33 @@ function getScoreColor(score) {
 // bearShift: how far down the bear group is translated (simulates sinking)
 const BEAR_STATES = {
     //             waterY  bearShift  caption
-    bear_full: { waterY: 132, bearShift:  0,  label: "🐻‍❄️ Great job! The Arctic is thriving." },
-    bear_dip:  { waterY: 122, bearShift:  6,  label: "🌊 Slightly inefficient — the ice is melting." },
-    bear_half: { waterY: 108, bearShift: 16,  label: "⚠️ Half submerged — the bear is struggling." },
-    bear_low:  { waterY:  92, bearShift: 28,  label: "🔴 Mostly underwater — critical AI usage!" },
-    bear_sink: { waterY:  74, bearShift: 44,  label: "💀 Nearly gone — the Arctic is in danger!" },
+    bear_full: { waterY: 132, bearShift: 0, label: "🐻‍❄️ Great job! The Arctic is thriving." },
+    bear_dip: { waterY: 122, bearShift: 6, label: "🌊 Slightly inefficient — the ice is melting." },
+    bear_half: { waterY: 108, bearShift: 16, label: "⚠️ Half submerged — the bear is struggling." },
+    bear_low: { waterY: 92, bearShift: 28, label: "🔴 Mostly underwater — critical AI usage!" },
+    bear_sink: { waterY: 74, bearShift: 44, label: "💀 Nearly gone — the Arctic is in danger!" },
 };
 
 function updatePolarBear(score) {
     let state;
-    if (score >= 90)      state = BEAR_STATES.bear_full;
+    if (score >= 90) state = BEAR_STATES.bear_full;
     else if (score >= 75) state = BEAR_STATES.bear_dip;
     else if (score >= 60) state = BEAR_STATES.bear_half;
     else if (score >= 40) state = BEAR_STATES.bear_low;
-    else                  state = BEAR_STATES.bear_sink;
+    else state = BEAR_STATES.bear_sink;
 
     const waterRect = document.getElementById("water-rect");
-    const wavePath  = document.getElementById("wave-path");
+    const wavePath = document.getElementById("wave-path");
     const bearGroup = document.getElementById("bear-group");
-    const caption   = document.getElementById("bear-caption");
+    const caption = document.getElementById("bear-caption");
 
     if (waterRect) waterRect.setAttribute("y", state.waterY);
     if (bearGroup) bearGroup.style.transform = `translateY(${state.bearShift}px)`;
-    if (caption)   caption.textContent = state.label;
+    if (caption) caption.textContent = state.label;
 
     // Wave path syncs with water surface
     if (wavePath) {
-        const y  = state.waterY;
+        const y = state.waterY;
         const y1 = y - 5;
         const y2 = y + 5;
         wavePath.setAttribute("d",
@@ -77,13 +77,13 @@ function loadStats() {
             efficiencyScore: 100,
             aiUsage: {}
         };
-        
+
         const stats = result.stats || defaultStats;
-        
+
         // Ensure properties exist for backwards compatibility with old saves
         if (!stats.aiUsage) stats.aiUsage = {};
         if (typeof stats.costEstimated === 'undefined') stats.costEstimated = 0;
-        
+
         // Safely parse tokens to avoid NaN
         const inputTokens = Number(stats.inputTokens) || 0;
         const outputTokens = Number(stats.outputTokens) || 0;
@@ -97,7 +97,7 @@ function loadStats() {
         document.getElementById("water-val").innerText = stats.waterConsumed.toFixed(5) + " L";
         document.getElementById("co2-val").innerText = stats.co2Emitted.toFixed(5) + " kg";
         // document.getElementById("cost-val").innerText = "$" + stats.costEstimated.toFixed(5);
-        
+
         // Use dedicated score from calculateScore() — fallback to stats.efficiencyScore
         const displayScore = (typeof result.score === 'number') ? result.score : stats.efficiencyScore;
 
@@ -108,17 +108,16 @@ function loadStats() {
         // Drive polar bear animation based on score
         updatePolarBear(displayScore);
 
-        // Pass dedicated alerts array collected from calculateScore()
         const storedAlerts = Array.isArray(result.alerts) ? result.alerts : [];
         updateAlertsAndTips(stats, storedAlerts);
-        updateBadges(stats);
+        updateBadges(stats, storedAlerts);
         updatePromptIntelligence(stats);
     });
 }
 
 function updatePromptIntelligence(stats) {
     const lastPrompts = stats.last_prompts || [];
-    
+
     // Default Empty State
     if (lastPrompts.length === 0) {
         document.getElementById("intel-avg-len").innerText = "0";
@@ -126,12 +125,12 @@ function updatePromptIntelligence(stats) {
         document.getElementById("intel-advice-list").innerHTML = '<li><span style="color:var(--text-muted)">Send prompts to get AI efficiency advice!</span></li>';
         return;
     }
-    
+
     // 1. Calculate Average Length
     const totalLength = lastPrompts.reduce((sum, p) => sum + p.length, 0);
     const avgLength = Math.round(totalLength / lastPrompts.length);
     document.getElementById("intel-avg-len").innerText = `${avgLength}`;
-    
+
     // 2. Count Platforms Used and most-used model per platform.
     const platformStats = {};
     lastPrompts.forEach((p) => {
@@ -146,7 +145,7 @@ function updatePromptIntelligence(stats) {
             platformStats[site].models[model] = (platformStats[site].models[model] || 0) + 1;
         }
     });
-    
+
     const platformsList = document.getElementById("intel-platforms-list");
     platformsList.innerHTML = "";
     Object.entries(platformStats).forEach(([site, info]) => {
@@ -159,13 +158,13 @@ function updatePromptIntelligence(stats) {
         const siteLabel = topModel ? `${site} (${topModel})` : site;
         platformsList.innerHTML += `<li>${siteLabel} – ${info.count} prompt${info.count > 1 ? 's' : ''}</li>`;
     });
-    
+
     // 3. Generate Advice Rules based on data
     const adviceList = document.getElementById("intel-advice-list");
     adviceList.innerHTML = "";
-    
+
     const advices = [];
-    
+
     if (avgLength > 200) {
         advices.push("• Try breaking long prompts into smaller tasks.");
     }
@@ -178,11 +177,11 @@ function updatePromptIntelligence(stats) {
     if (lastPrompts.length === 5) {
         advices.push("• Consider reusing optimized prompts to reduce repeated token usage.");
     }
-    
+
     if (advices.length === 0) {
         advices.push("• Your prompt patterns are looking balanced and efficient!");
     }
-    
+
     advices.forEach(adv => {
         adviceList.innerHTML += `<li>${adv}</li>`;
     });
@@ -212,9 +211,9 @@ function updateAlertsAndTips(stats, storedAlerts = []) {
 
     // Default fallback when there are no prompts yet
     if (activeAlerts.length === 0 && activeTips.length === 0) {
-        activeTips.push({ text: "• Use smaller AI models when possible", type: "tip" });
-        activeTips.push({ text: "• Reduce prompt length", type: "tip" });
-        activeTips.push({ text: "• Avoid repeated prompts", type: "tip" });
+        activeTips.push({ text: "Use smaller AI models when possible", type: "tip" });
+        activeTips.push({ text: "Reduce prompt length", type: "tip" });
+        activeTips.push({ text: "Avoid repeated prompts", type: "tip" });
     }
 
     [...activeAlerts, ...activeTips].forEach(msg => {
@@ -225,20 +224,25 @@ function updateAlertsAndTips(stats, storedAlerts = []) {
     });
 }
 
-function updateBadges(stats) {
+function updateBadges(stats, storedAlerts = []) {
     const rewardsContainer = document.getElementById("rewards-container");
     rewardsContainer.innerHTML = "";
 
-    if (stats.tokensUsed < 5000 && stats.promptsSent >= 5) {
-        rewardsContainer.innerHTML += `<span class="badge" title="Low token usage">🌱 Green AI User</span>`;
-    }
-    if (stats.efficiencyScore >= 95 && stats.promptsSent >= 2) {
-        rewardsContainer.innerHTML += `<span class="badge" title="Short efficient prompts">⚡ Efficient Prompter</span>`;
+    const penaltyTriggered = storedAlerts.length > 0;
+
+    // These badges ONLY appear if the most recent prompt triggered no penalties (positive reinforcement)
+    if (!penaltyTriggered) {
+        if (stats.tokensUsed < 5000 && stats.promptsSent >= 5) {
+            rewardsContainer.innerHTML += `<span class="badge" title="Low token usage">🌱 Green AI User</span>`;
+        }
+        if (stats.efficiencyScore >= 95 && stats.promptsSent >= 2) {
+            rewardsContainer.innerHTML += `<span class="badge" title="Short efficient prompts">⚡ Efficient Prompter</span>`;
+        }
     }
     if (stats.co2Emitted < 0.05 && stats.promptsSent >= 10) {
         rewardsContainer.innerHTML += `<span class="badge" title="Reduced emissions">🌍 Carbon Saver</span>`;
     }
-    
+
     // Add default blank state if no badges
     if (rewardsContainer.innerHTML === "") {
         rewardsContainer.innerHTML = `<span class="badge badge-default" title="Submit more to earn badges">Earn badges by prompting</span>`;
